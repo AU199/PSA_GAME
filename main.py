@@ -10,13 +10,17 @@ x = 0
 y = 500
 rounds_move = 1
 rounds_idle = 0
+curr_t = 0
+curr_in = 0
 cool_move = 0
 cool_idle = 0
 images_m = []
 images_i = []
 images_e = []
+current_tick = ["right",64]
 jump = 0
 font = pygame.font.Font("FONT.ttf",24)
+
 
 grass_line = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -96,7 +100,7 @@ def idle(r):
 
 def print_grass():
 
-  image = pygame.transform.rotozoom(images_e[0], 0, 3.5)
+  image = pygame.transform.rotozoom(images_e[3], 0,2)
 
   return image
 
@@ -106,33 +110,39 @@ print(images_e[0])
 print("BREAKPOINT 2")
 a = None
 image = None
+curr_t = curr_in*2+2
+lenr = len(current_tick)-2
 while True:
+  if curr_t<1 and curr_in == lenr :
+    curr_in += 2
+    curr_t = curr_in*2+2
   p = write("HELLO DOES THIS WORK",font)
-  screen.fill((40, 50, 240))
+  screen.fill((135, 206, 235))
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
 
+  
+  
   b = tick(rounds_move, cool_move, cool_idle, rounds_idle)
 
   rounds_move = b[0]
   rounds_idle = b[1]
   cool_move = b[2]
   cool_idle = b[3]
-  keys=pygame.key.get_pressed()
-  if keys[pygame.K_RIGHT]:
-    a = check_key("right",rounds_move,x)
-    x = a[1]
-    screen.blit(a[0],(x,y))
-  elif keys[pygame.K_LEFT]:
-    a=check_key("left",rounds_move,x)
-    x = a[1]
-    screen.blit(a[0],(x,y))
+  keys = pygame.key.get_pressed()
+  b = print_grass()
+  posa = -25
+  for i in range(47):
+    screen.blit(b, (posa, 568))
+
+    posa = i * 24
+
+  
   else:
     a = idle(rounds_idle)
-    screen.blit(a,(x,y))
-  
-  
-  
-  
+    screen.blit(a, (x, y))
+
+  screen.blit(p,(x, y))
   pygame.display.flip()
+  curr_t -= 1
