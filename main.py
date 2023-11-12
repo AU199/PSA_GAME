@@ -17,7 +17,7 @@ cool_idle = 0
 images_m = []
 images_i = []
 images_e = []
-current_tick = ["right",64]
+current_tick = ["right",3]
 jump = 0
 font = pygame.font.Font("FONT.ttf",24)
 
@@ -57,6 +57,7 @@ def check_key(key, r, x):
 
     image = pygame.transform.rotozoom(image, 0, 3)
     x += 0.5
+    print("right move1")
 
   if key == "left":
     image = images_m[r]
@@ -113,16 +114,17 @@ image = None
 curr_t = curr_in*2+2
 lenr = len(current_tick)-2
 while True:
-  if curr_t<1 and curr_in == lenr :
-    curr_in += 2
-    curr_t = curr_in*2+2
+  if curr_t<1:
+    if curr_in < lenr:
+      curr_in += 2
+      curr_t = current_tick[curr_in]*2+2
   p = write("HELLO DOES THIS WORK",font)
   screen.fill((135, 206, 235))
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
 
-  
+  print(curr_t, curr_in)
   
   b = tick(rounds_move, cool_move, cool_idle, rounds_idle)
 
@@ -133,15 +135,21 @@ while True:
   keys = pygame.key.get_pressed()
   b = print_grass()
   posa = -25
+  if current_tick[curr_in] == "right":
+    print("hello")
+    a = check_key("right",rounds_move,x)
+    x = a[1]
+    screen.blit(a[0],(x,y))
+  else:
+    a = idle(rounds_idle)
+    screen.blit(a, (x, y))
   for i in range(47):
     screen.blit(b, (posa, 568))
 
     posa = i * 24
 
   
-  else:
-    a = idle(rounds_idle)
-    screen.blit(a, (x, y))
+ 
 
   screen.blit(p,(x, y))
   pygame.display.flip()
