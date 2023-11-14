@@ -16,11 +16,10 @@ cool_idle = 0
 images_m = []
 images_i = []
 images_e = []
-current_tick = ["right",3,"right",30,"end"]
+current_tick = ["right", 1000, "left", 1000, "wait", 100, "right", 100, "end"]
 curr_t = current_tick[1]
 jump = 0
-font = pygame.font.Font("FONT.ttf",24)
-
+font = pygame.font.Font("FONT.ttf", 24)
 
 grass_line = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -42,12 +41,11 @@ for file_name in os.listdir("EXTRAS"):
   img = pygame.image.load("EXTRAS" + os.sep + file_name).convert_alpha()
   images_e.append(img)
 
-print("BREAKPOINT 1")
 
-def write(sentence,font):
-  ret = font.render(sentence,True,(240,240,240))
+def write(sentence, font):
+  ret = font.render(sentence, True, (240, 240, 240))
   return ret
-  
+
 
 def check_key(key, r, x):
 
@@ -57,7 +55,6 @@ def check_key(key, r, x):
 
     image = pygame.transform.rotozoom(image, 0, 3)
     x += 0.5
-    print("right move1")
 
   if key == "left":
     image = images_m[r]
@@ -101,37 +98,31 @@ def idle(r):
 
 def print_grass():
 
-  image = pygame.transform.rotozoom(images_e[3], 0,2)
+  image = pygame.transform.rotozoom(images_e[3], 0, 2)
 
   return image
 
 
-print(images_e[0])
 
-print("BREAKPOINT 2")
 a = None
 image = None
-lenr = len(current_tick)-2
-print(lenr)
+lenr = len(current_tick) - 2
 while True:
-  if curr_t<1:
-    
-    print(f"Curr_in {curr_in},Current lenr {lenr}")
+  if curr_t < 1:
+
     if curr_in < lenr:
       print(curr_t, curr_in)
       curr_in += 2
       if current_tick[curr_in] != "end":
-        curr_t += current_tick[curr_in+1]
+        curr_t += current_tick[curr_in + 1]
     else:
-      curr_in = len(current_tick)-1
-  p = write("HELLO DOES THIS WORK",font)
+      curr_in = len(current_tick) - 1
+  p = write("Hello I am a Lumberjack", font)
   screen.fill((135, 206, 235))
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
 
-  
-  
   b = tick(rounds_move, cool_move, cool_idle, rounds_idle)
 
   rounds_move = b[0]
@@ -142,11 +133,14 @@ while True:
   b = print_grass()
   posa = -25
   if current_tick[curr_in] == "right":
-    print("hello")
-    a = check_key("right",rounds_move,x)
+    a = check_key("right", rounds_move, x)
     x = a[1]
-    screen.blit(a[0],(x,y))
-  else:
+    screen.blit(a[0], (x, y))
+  elif current_tick[curr_in] == "left":
+    a = check_key("left", rounds_move, x)
+    x = a[1]
+    screen.blit(a[0], (x, y))
+  elif current_tick[curr_in] == "wait" or current_tick[curr_in] == "end":
     a = idle(rounds_idle)
     screen.blit(a, (x, y))
   for i in range(47):
@@ -154,9 +148,6 @@ while True:
 
     posa = i * 24
 
-  
- 
-
-  screen.blit(p,(x, y))
+  screen.blit(p, (x, y))
   pygame.display.flip()
   curr_t -= 1
