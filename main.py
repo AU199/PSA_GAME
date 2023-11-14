@@ -10,14 +10,14 @@ x = 0
 y = 500
 rounds_move = 1
 rounds_idle = 0
-curr_t = 0
 curr_in = 0
 cool_move = 0
 cool_idle = 0
 images_m = []
 images_i = []
 images_e = []
-current_tick = ["right",3]
+current_tick = ["right",3,"right",30,"end"]
+curr_t = current_tick[1]
 jump = 0
 font = pygame.font.Font("FONT.ttf",24)
 
@@ -111,20 +111,26 @@ print(images_e[0])
 print("BREAKPOINT 2")
 a = None
 image = None
-curr_t = curr_in*2+2
 lenr = len(current_tick)-2
+print(lenr)
 while True:
   if curr_t<1:
+    
+    print(f"Curr_in {curr_in},Current lenr {lenr}")
     if curr_in < lenr:
+      print(curr_t, curr_in)
       curr_in += 2
-      curr_t = current_tick[curr_in]*2+2
+      if current_tick[curr_in] != "end":
+        curr_t += current_tick[curr_in+1]
+    else:
+      curr_in = len(current_tick)-1
   p = write("HELLO DOES THIS WORK",font)
   screen.fill((135, 206, 235))
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
 
-  print(curr_t, curr_in)
+  
   
   b = tick(rounds_move, cool_move, cool_idle, rounds_idle)
 
