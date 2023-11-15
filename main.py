@@ -1,5 +1,8 @@
 import pygame
 import os
+import random
+
+RandomNum = random.randint(0,4)
 
 pygame.init()
 
@@ -21,8 +24,10 @@ curr_t = current_tick[1]
 jump = 0
 font = pygame.font.Font("FONT.ttf", 24)
 
-grass_line = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+cloud_line = [0, 120, 190, 320, 400, 420, 460]
+cloud_y = []
+for i in range(len(cloud_line)):
+  cloud_y.append(random.randint(150,200))
 posa = -40
 posb = 0
 
@@ -32,6 +37,7 @@ for file_name in os.listdir("Movement Right"):
   images_m.append(img)
 
 for file_name in os.listdir("Idle"):
+  
   img = pygame.image.load("Idle" + os.sep + file_name).convert_alpha()
   images_i.append(img)
 images_i.append(pygame.image.load("Idle/New Piskel-2.png.png"))
@@ -40,7 +46,7 @@ for file_name in os.listdir("EXTRAS"):
   print(file_name)
   img = pygame.image.load("EXTRAS" + os.sep + file_name).convert_alpha()
   images_e.append(img)
-
+#for file_name in os.listdir(""):
 
 def write(sentence, font):
   ret = font.render(sentence, True, (240, 240, 240))
@@ -102,6 +108,11 @@ def print_grass():
 
   return image
 
+def print_clouds():
+  image = pygame.transform.rotozoom(images_e[5], 0, 2)
+
+  return image 
+
 
 
 a = None
@@ -129,8 +140,8 @@ while True:
   rounds_idle = b[1]
   cool_move = b[2]
   cool_idle = b[3]
-  keys = pygame.key.get_pressed()
   b = print_grass()
+  c = print_clouds()
   posa = -25
   if current_tick[curr_in] == "right":
     a = check_key("right", rounds_move, x)
@@ -145,9 +156,10 @@ while True:
     screen.blit(a, (x, y))
   for i in range(47):
     screen.blit(b, (posa, 568))
-
+    
     posa = i * 24
-
+  for i in range(len(cloud_line)):
+    screen.blit(c, (cloud_line[i], cloud_y[i]))
   screen.blit(p, (x, y))
   pygame.display.flip()
   curr_t -= 1
