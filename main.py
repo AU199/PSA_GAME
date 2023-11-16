@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+import time
 
 RandomNum = random.randint(0,4)
 
@@ -13,13 +14,19 @@ x = 0
 y = 500
 rounds_move = 1
 rounds_idle = 0
+ax_move = 1
+god_move = 0
 curr_in = 0
 cool_move = 0
+cool_ax = 0
+cool_god = 0
 cool_idle = 0
 images_m = []
 images_i = []
 images_e = []
-current_tick = ["right", 1000, "left", 1000, "wait", 100, "right", 100, "end"]
+images_ax = []
+images_g = []
+current_tick = ["right", 1000, "left", 1000, "wait", 100, "right", 100,"axe_swing",3, "end"]
 curr_t = current_tick[1]
 jump = 0
 font = pygame.font.Font("FONT.ttf", 24)
@@ -46,7 +53,12 @@ for file_name in os.listdir("EXTRAS"):
   print(file_name)
   img = pygame.image.load("EXTRAS" + os.sep + file_name).convert_alpha()
   images_e.append(img)
-#for file_name in os.listdir(""):
+for file_name in os.listdir("Axe-Swing-Animations"):
+  image = pygame.image.load("Axe-Swing-Animations"+os.sep+file_name).convert_alpha()
+  images_ax.append(image)
+for file_name in os.listdir("God_Assets"):
+  image = pygame.image.load("God_Assets"+os.sep+file_name).convert_alpha()
+  images_g.append(image)
 
 def write(sentence, font):
   ret = font.render(sentence, True, (240, 240, 240))
@@ -71,7 +83,7 @@ def check_key(key, r, x):
   return image, x
 
 
-def tick(rm, cm, ci, ri):
+def tick(rm, cm, ci, ri, am, ac):
   if cm < 1:
     rm += 1
 
@@ -88,11 +100,22 @@ def tick(rm, cm, ci, ri):
     ri = 0
     ci += 140
 
+  if ac < 1:
+    am += 1
+    ac += 540
+
+  if am > len(images_m) - 1:
+    am = 0
+
+    cm += 10
+    
   if cm > 0:
     cm -= 1
   if ci > 0:
     ci -= 1
-  return rm, ri, cm, ci
+  if ac> 0:
+    ac -= 1
+  return rm, ri, cm, ci, ac,am
 
 
 def idle(r):
@@ -100,6 +123,11 @@ def idle(r):
 
   image = pygame.transform.rotozoom(image, 0, 3)
   return image
+def axe_swing(curr):
+
+      image = images_ax[curr]
+      image = pygame.transform.rotozoom(image, 0, 3)
+      return image
 
 
 def print_grass():
@@ -134,12 +162,14 @@ while True:
     if event.type == pygame.QUIT:
       pygame.quit()
 
-  b = tick(rounds_move, cool_move, cool_idle, rounds_idle)
+  b = tick(rounds_move, cool_move, cool_idle, rounds_idle,ax_move,cool_ax)
 
   rounds_move = b[0]
   rounds_idle = b[1]
   cool_move = b[2]
   cool_idle = b[3]
+  cool_ax = b[4]
+  ax_move = b[5]
   b = print_grass()
   c = print_clouds()
   posa = -25
@@ -151,6 +181,10 @@ while True:
     a = check_key("left", rounds_move, x)
     x = a[1]
     screen.blit(a[0], (x, y))
+  elif current_tick[curr_in] == "axe_swing":
+      a = axe_swing(ax_move)
+      screen.blit(a, (x, y-30))
+      
   elif current_tick[curr_in] == "wait" or current_tick[curr_in] == "end":
     a = idle(rounds_idle)
     screen.blit(a, (x, y))
@@ -162,4 +196,8 @@ while True:
     screen.blit(c, (cloud_line[i], cloud_y[i]))
   screen.blit(p, (x, y))
   pygame.display.flip()
-  curr_t -= 1
+  if current_tick[curr_in] != "axe_swing":
+    curr_t -= 1
+  else:
+    if ax_move == 0:
+      curr_t -=1
