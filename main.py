@@ -22,6 +22,7 @@ cool_move = 0
 cool_ax = 0
 cool_god = 0
 cool_idle = 0
+tree_created = 0
 printv = ""
 curr_hed = ""
 images_m = []
@@ -29,8 +30,8 @@ images_i = []
 images_e = []
 images_ax = []
 images_g = []
-current_tick = ["right",100
-               ,"left",100,
+images_h = []
+current_tick = ["right",600,
                "axe_swing",2,
                "speak","STOP!!","god",
                 "speak", "Why are you cutting a tree down","god",
@@ -77,6 +78,9 @@ for file_name in os.listdir("Axe-Swing-Animations"):
 for file_name in os.listdir("God_Assets"):
   image = pygame.image.load("God_Assets" + os.sep + file_name).convert_alpha()
   images_g.append(image)
+for file_name in os.listdir("Talking_heads"):
+  image = pygame.image.load("Talking_heads"+os.sep+ file_name).convert_alpha()
+  images_h.append(image)
 
 
 def write(sentence, font):
@@ -86,6 +90,7 @@ def write(sentence, font):
 
 
 def check_key(key, r, x):
+  image = None
 
   if key == "right":
 
@@ -154,21 +159,19 @@ def axe_swing(curr):
 
 def print_grass():
 
-  image = pygame.transform.rotozoom(images_e[3], 0, 2)
+  image = pygame.transform.rotozoom(images_e[2], 0, 2)
 
   return image
 
 
 def print_clouds():
-  image = pygame.transform.rotozoom(images_e[5], 0, 2)
-
-  return image
-
-
-def print_trees():
   image = pygame.transform.rotozoom(images_e[4], 0, 2)
 
   return image
+def print_tree():
+  tree_image = images_e[3]
+  zoomed_tree = pygame.transform.rotozoom(tree_image, 0, 2)
+  return zoomed_tree
 
 def god(key,r, x):
   image = images_g[r]
@@ -180,12 +183,21 @@ def god(key,r, x):
     image = pygame.transform.rotozoom(image, 0, 3)
     x += 0.5
   return image, x
-def god_head(talker):
-  
+def head(talker):
+    image = None
+    if talker == "human":
+        image = images_h[1]  
+    elif talker == "god":
+        image = images_h[0]
+    else:
+      return None
+    return pygame.transform.rotozoom(image,0,3)
 
 a = None
 image = None
 lenr = len(current_tick) - 2
+tree = print_tree()
+tree_created = 1
 while True:
  
   if curr_t < 1:
@@ -209,6 +221,7 @@ while True:
     else:
       curr_in = len(current_tick) - 1
   p = write(printv, font)
+  d = head(curr_hed)
   screen.fill((135, 206, 235))
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
@@ -249,8 +262,17 @@ while True:
 
   for i in range(len(cloud_line)):
     screen.blit(c, (cloud_line[i], cloud_y[i]))
-  screen.blit(p, (50, 0))
-  
+  if current_tick[curr_in] == "speak":
+    pygame.draw.rect(screen, (0, 0, 0), (70, 0, 500, 100))
+  screen.blit(p, (70, 0))
+  if current_tick[curr_in] == "speak":  
+    if curr_hed == "human":
+      screen.blit(d,(-10,0))
+    elif curr_hed == "god":
+      screen.blit(d,(-55,-70))
+  if tree_created == 1:
+    screen.blit(tree, (500, 0))
+    tree_created = 0
   
   
   pygame.display.flip()
