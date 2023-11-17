@@ -23,6 +23,7 @@ cool_ax = 0
 cool_god = 0
 cool_idle = 0
 printv = ""
+curr_hed = ""
 images_m = []
 images_i = []
 images_e = []
@@ -31,9 +32,10 @@ images_g = []
 current_tick = ["right",100
                ,"left",100,
                "axe_swing",2,
-               "speak","STOP!!","god"
-                "speak", "Why are you cutting a tree down","god"
-                "speak", "So that I can graze my cattle","human"
+               "speak","STOP!!","god",
+                "speak", "Why are you cutting a tree down","god",
+                "speak", "So that I can graze my cattle","human",
+                "speak","","",
                 
                 
                "clear"
@@ -178,6 +180,8 @@ def god(key,r, x):
     image = pygame.transform.rotozoom(image, 0, 3)
     x += 0.5
   return image, x
+def god_head(talker):
+  
 
 a = None
 image = None
@@ -187,18 +191,21 @@ while True:
   if curr_t < 1:
 
     if curr_in < lenr:
-      print(curr_t, curr_in)
-      curr_in += 2
+      print(current_tick[curr_in])
+      if current_tick[curr_in] != "speak": 
+        curr_in += 2
+      else:
+        curr_in+=3
       if current_tick[curr_in] :
         print(curr_in, current_tick[curr_in])
         if current_tick[curr_in] == "speak":
-          print(current_tick[curr_in+1])
           printv = current_tick[curr_in+1]
+          curr_hed = current_tick[curr_in+2]
           curr_t += 400 + len(printv)^3
         elif current_tick[curr_in] == "clear":
           printv = ""
         elif current_tick[curr_in] != "end":
-          curr_t = current_tick[curr_in+1]
+            curr_t = current_tick[curr_in+1]
     else:
       curr_in = len(current_tick) - 1
   p = write(printv, font)
