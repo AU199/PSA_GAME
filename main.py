@@ -22,10 +22,18 @@ cool_move = 0
 cool_ax = 0
 cool_god = 0
 cool_idle = 0
-tree_created = 0
+tree_created = 1
 god_entered = 0
-
+c_chart = 0
+p_chart = 0
+poss = 0
 printv = ""
+c_c = ""
+p_c = ""
+p = None
+printx = ""
+printa = ""
+p2 = None
 curr_hed = ""
 images_m = []
 images_i = []
@@ -36,24 +44,42 @@ images_h = []
 line_breaks = 0
 current_tick = [
     "right", 600, "axe_swing", 2, "entry_god", 2, "speak", "STOP!!", "god",
-    "speak", "Why are you cutting a tree down?", "god", "speak",
-    "So that I can graze my cattle", "human", "speak",
+    "speak", "Why are you trying to cut a tree down?", "god", "speak",
+    "So my cattle can graze", "human", "speak",
     " Why can't you do that somewhere else? ", "god", "speak",
-    "Because this is closer.", "human", "speak",
-    "And why does this even matter?", "human", "speak",
-    "Why does this matter!!", "god", "speak",
-    "Well, for starters, It breaks the Carbon Cycle in the forest", "god"
+    "Because there is nowhere else.", "human", "speak",
+    "And why does it even matter!!", "human", "speak", "Why does it matter!?",
+    "god", "speak", "Well if you must know", "god", "speak",
+    "It disrupts the Carbon Cycle in the rainforest", "god", "speak",
+    "Wait, What is the carbon cycle?", "human", "Carbon Chart Start", 2,
+    "speak",
+    "Well The carbon cycle is the movement of carbon between living and non-living objects on Earth.",
+    "god", "Carbon Chart End", 2, "speak",
+    "Well, I still don't get why I shouldn't cut down trees", "human", "speak",
+    "When You cut trees there are less of them to absorb and store the Carbon from the air.",
+    "god", "speak",
+    "And when the trees start to decompose they release more Carbon into the atmosphere",
+    "god", "speak",
+    "leading to a higher amount of greenhouse gases, and other things driving global warming",
+    "god", "speak",
+    "And a the real life example of this is the Amazon Rainforest.",
+    "god", "speak",
+    "With deforestation on the rise and more than 1000 kilometers of land leveled",
+    "god", "speak",
+    "A report from 2022 shows that agriculture is the main reason for this.",
+    "god", "speak",
+    "speak",
+    "","god"
     "clear", "end"
 ]
 god_current_tick = ["wait", 1000, "left", 20]
 curr_t = current_tick[1]
-jump = 0
 font = pygame.font.Font("FONT.ttf", 24)
 
 cloud_line = list(range(0, 700, random.randint(30, 100)))
 cloud_y = []
 for i in range(len(cloud_line)):
-  cloud_y.append(random.randint(150, 200))
+  cloud_y.append(random.randint(0, 200))
 posa = -40
 posb = 0
 
@@ -215,13 +241,19 @@ def god_enter(move, y):
 
 
 def line_break(curr_sentence: str):
-  if len(curr_sentence) > 20:
+  if len(curr_sentence) > 25:
     middle_index = len(curr_sentence) // 2
     first_sentence = curr_sentence[:middle_index]
-    second_sentence = curr_sentence[middle_index:]
-    return (first_sentence, second_sentence)
+    second_sentence = curr_sentence[middle_index:len(curr_sentence)]
+    return first_sentence, second_sentence
+
   else:
     return curr_sentence
+
+
+def resize_image(index, images_e):
+  image = pygame.transform.rotozoom(images_e[index], 0, 1)
+  return image
 
 
 a = None
@@ -235,25 +267,34 @@ curr_line = 1
 while True:
 
   if curr_t < 1:
-
+    line_breaks = 0
     if curr_in < lenr:
-      print(current_tick[curr_in])
+
       if current_tick[curr_in] != "speak":
         curr_in += 2
       else:
         curr_in += 3
       if current_tick[curr_in]:
-        print(curr_in, current_tick[curr_in])
+
+        if current_tick[curr_in] == "Carbon Chart Start":
+          c_chart = 1
+          c_c = resize_image(5, images_e)
+        if current_tick[curr_in] == "Carbon Chart End":
+          c_chart = 0
         if current_tick[curr_in] == "speak" and line_breaks == 0:
-          if len(current_tick[curr_in+1]) > 20:
+          if len(current_tick[curr_in + 1]) > 50:
             a = line_break(current_tick[curr_in + 1])
             first_letter = a[0]
             second_sentence = a[1]
+            if len(a) > 2:
+              line_breaks = 2
+              third_sentence = a[2]
+              printa = third_sentence
 
             printv = first_letter
+            printx = second_sentence
             curr_line += 1
             line_breaks = 1
-            print(line_breaks)
 
           else:
             printv = current_tick[curr_in + 1]
@@ -263,13 +304,20 @@ while True:
           curr_hed = current_tick[curr_in + 2]
         elif current_tick[curr_in] == "clear":
           printv = ""
+          printx = ""
         elif current_tick[curr_in] != "end":
           curr_t = current_tick[curr_in + 1]
     else:
       curr_in = len(current_tick) - 1
   if line_breaks == 1:
-    printv = second_sentence
-    line_breaks = 0
+    p = write(printv, font)
+    print(printx)
+    p2 = write(printx, font)
+  elif line_breaks == 2:
+    p = write(printv, font)
+    print(printx)
+    p2 = write(printx, font)
+    p3 = write(printa, font)
   else:
     p = write(printv, font)
   d = head(curr_hed)
@@ -324,25 +372,44 @@ while True:
   for i in range(len(cloud_line)):
     screen.blit(c, (cloud_line[i], cloud_y[i]))
   if current_tick[curr_in] == "speak":
-    pygame.draw.rect(screen, (0, 0, 0), (70, 0, 500, 100))
-  screen.blit(p, (70, 0))
+    pygame.draw.rect(screen, (0, 0, 0), (70, 0, 670, 100))
+  if line_breaks == 1:
+    screen.blit(p, (70, 0))
+    screen.blit(p2, (80, 40))
+  elif line_breaks == 2:
+    screen.blit(p, (70, 0))
+    screen.blit(p2, (80, 60))
+    screen.blit(p3, (80, 80))
+
+  else:
+    screen.blit(p, (70, 0))
   if current_tick[curr_in] == "speak":
     if curr_hed == "human":
       screen.blit(d, (-10, 0))
     elif curr_hed == "god":
       screen.blit(d, (-55, -70))
   if tree_created == 1:
-    screen.blit(tree, (300, 266))
+    poss = 300
+  else:
+    poss = 340
+  for i in range(5):
+    screen.blit(tree, (poss, 266))
+    poss += 60
+  if c_chart == 1:
+    screen.blit(c_c, (400, 300))
 
   pygame.display.flip()
+  if curr_in > 3:
+    tree_created = 0
   if current_tick[curr_in] != "axe_swing" or current_tick[
       curr_in] != "god_enter" or line_breaks != 1:
     curr_t -= 1
+
   else:
     if ax_move == 0:
       print("gp")
       curr_t -= 1
-      tree_created = 0
+
     if god_move == 0:
       print("og")
       curr_t -= 1
